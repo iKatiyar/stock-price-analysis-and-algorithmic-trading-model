@@ -1,8 +1,8 @@
 📈 Stacked LSTM Stock Price Prediction with Mock Trading Environment
 
-This project demonstrates the development and training of a stacked Long Short-Term Memory (LSTM) model for predicting stock prices using historical data. Additionally, a mock trading environment is included to simulate buy/sell decisions based on the predicted prices, helping to evaluate potential trading strategies.
+This project demonstrates the development of a stacked Long Short-Term Memory (LSTM) model for predicting stock prices using historical data. Additionally, it includes a mock trading environment to simulate buy/sell decisions based on the model's predictions, helping to evaluate potential trading strategies.
 
-Table of Contents
+📌 Table of Contents
 
 	•	Installation
 	•	Project Structure
@@ -14,82 +14,102 @@ Table of Contents
 	•	Results
 	•	License
 
-Installation
+⚙️ Installation
 
 To run this project, you will need to install the required Python packages:
 pip install numpy pandas scikit-learn tensorflow matplotlib yfinance pandas-datareader seaborn
 
-Project Structure;
-- StackedLSTM.ipynb         # Jupyter Notebook containing the full code and workflow
-- README.md                 # This README file
-- AAPL_daily.csv            # Example dataset (Apple stock data)
+📂 Project Structure
 
-Data Collection
-Stock price data is fetched from the Yahoo Finance API using the yfinance package. You can modify the code to collect data for any stock symbol by changing the ticker.
+	├── StackedLSTM.ipynb      # Jupyter Notebook with the full workflow  
+	├── README.md              # Project documentation  
+	├── AAPL_daily.csv         # Example dataset (Apple stock data)  
+
+📊 Data Collection
+
+Stock price data is fetched from Yahoo Finance using the yfinance package. You can modify the code to collect data for any stock symbol by changing the ticker.
+
 Example Code to Fetch Data:
-# Example to fetch Apple (AAPL) stock data from June 1, 2004
-stock_data = prepare_ticker_data("AAPL", start_date="2004-06-01")
-stock_data.to_csv("AAPL_daily.csv", index=False)
 
-Function Explanations
+	# Example to fetch Apple (AAPL) stock data from June 1, 2004
+	from datetime import datetime
+	stock_data = prepare_ticker_data("AAPL", start_date="2004-06-01")
+	stock_data.to_csv("AAPL_daily.csv", index=False)
 
-Here is a breakdown of the key functions used in this project:
+
+🔍 Key Functions
+
+This project includes several helper functions to process stock data:
 
 1. get_ticker_data(ticker_code: str, start_date=None, end_date=datetime.today())
 
-	•	Fetches stock data using the Yahoo Finance API, based on the ticker symbol and date range.
+	•	Fetches stock data using the Yahoo Finance API for a given stock ticker and date range.
 
 2. clean_ticker_data(df)
 
-	•	Cleans the data by resetting the index, renaming columns, and converting the date to a proper datetime format.
-
+	•	Cleans and preprocesses stock data (e.g., renaming columns, converting date format).
 3. resample(df)
 
-	•	Resamples the time-series data to daily frequency, filling any missing days.
+	•	Resamples time-series data to daily frequency and fills any missing days.
 
 4. basic_preprocess(df)
 
-	•	Interpolates missing values and fills data gaps. The data is cast into float type for easier processing.
+	•	Interpolates missing values and converts the dataset into a float-compatible format.
 
 5. prepare_ticker_data(ticker_code: str, start_date=None, end_date=datetime.today())
 
-	•	A utility function to fetch, clean, resample, and preprocess the stock data in one step.
+	•	A pipeline function that combines fetching, cleaning, resampling, and preprocessing in one step.
 
-Model Training
+🧠 Model Training
 
-The LSTM model is built using TensorFlow’s Keras API. Here’s an overview of the model and training process:
+The stacked LSTM model is built using TensorFlow’s Keras API.
 
-Key Steps:
+🔑 Key Steps:
 
-	1.	Data Normalization: The stock data is scaled between 0 and 1 using MinMaxScaler for better performance.
-	2.	Splitting Data: The dataset is split into training and testing sets.
-	3.	Model Definition: The model is a stacked LSTM with multiple layers followed by a Dense layer for output.
-	4.	Callbacks: Early stopping and learning rate reduction are used to optimize training performance.
-	5.	Evaluation: The model is evaluated using Mean Squared Error (MSE) and other metrics to compare predicted prices with actual prices.
+	1.	Data Normalization: The stock prices are scaled between 0 and 1 using MinMaxScaler for better model performance.
+	2.	Data Splitting: The dataset is divided into training and testing sets.
+	3.	Model Definition: 
+ 			• A stacked LSTM architecture with multiple layers.
+    			• A Dense output layer for predicting the next day's stock price.
+	4.	Training Optimization:
+			• Early stopping prevents overfitting.
+    			• Learning rate reduction improves convergence.
+	5.	Evaluation: The model is evaluated using Mean Squared Error (MSE) and other relevant metrics.
 
-Mock Trading Environment
+ 
+💰 Mock Trading Environment
 
-This project includes a mock trading environment to simulate trading based on the predicted stock prices. The strategy assumes that:
+A mock trading simulation is implemented to assess the model’s predictions.
+
+💹 Trading Strategy
 
 	•	Buy when the predicted price is higher than the previous actual price.
 	•	Sell when the predicted price is lower than the previous actual price.
 
-Key Steps:
+🔑 Key Steps:
 
-	1.	Buy Condition: Purchase stock if the predicted price is higher than the current price.
-	2.	Sell Condition: Sell stock if the predicted price is lower than the current price.
-	3.	Profit Calculation: Keep track of your capital and owned stocks to calculate total profit.
+	1.	Buying Condition: Purchase stock if the predicted price is higher than the actual price.
+	2.	Selling Condition: Sell stock if the predicted price is lower than the actual price.
+	3.	Profit Calculation: Track capital and owned stocks to compute total returns.
+ 
+🚀 Running the Code
 
-Results
+1.	Clone the repository:
 
-After running the notebook:
+		git clone https://github.com/yourusername/stacked-lstm-stock-prediction.git
+		cd stacked-lstm-stock-prediction
 
-	•	You will have a trained LSTM model that predicts future stock prices.
-	•	A plot comparing actual vs predicted prices will be displayed.
-	•	The mock trading environment will provide simulated results, showing how profitable the predictions would have been.
+2.	Run the Jupyter Notebook (StackedLSTM.ipynb) step by step.
 
-License
+
+📊 Results
+
+After executing the notebook:
+
+✅ A trained LSTM model capable of predicting future stock prices will be created.
+✅ A visualization comparing actual vs predicted stock prices will be displayed.
+✅ The mock trading simulation will provide insights into the profitability of using LSTM predictions for trading.
+
+📜 License
 
 This project is licensed under the MIT License. See the LICENSE file for more details.
-
-This README is structured to guide users through installation, running the code, and understanding the project. You can customize the explanations or add more sections if needed before pushing it to your GitHub repo.
