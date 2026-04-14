@@ -1,115 +1,121 @@
-📈 Stacked LSTM Stock Price Prediction with Mock Trading Environment
+# 📈 Stacked LSTM Stock Price Prediction & Mock Trading
 
-This project demonstrates the development of a stacked Long Short-Term Memory (LSTM) model for predicting stock prices using historical data. Additionally, it includes a mock trading environment to simulate buy/sell decisions based on the model's predictions, helping to evaluate potential trading strategies.
+> **Deep learning for stock prediction** — stacked LSTM model trained on historical price data, evaluated against a mock trading simulation with buy/sell signal generation and profit tracking.
 
-📌 Table of Contents
+---
 
-	•	Installation
-	•	Project Structure
-	•	Data Collection
-	•	Function Explanations
-	•	Model Training
-	•	Mock Trading Environment
-	•	Running the Code
-	•	Results
-	•	License
+## ✨ What It Does
 
-⚙️ Installation
+1. **Fetches** historical stock price data from Yahoo Finance (`yfinance`)
+2. **Preprocesses** — resamples to daily frequency, interpolates gaps, scales with MinMaxScaler
+3. **Trains** a stacked LSTM (multiple layers + Dense output) to predict next-day closing price
+4. **Evaluates** with MSE, early stopping, and learning rate reduction on plateau
+5. **Simulates** a mock trading environment — buy/sell decisions based on predicted vs actual price
+6. **Visualises** actual vs predicted prices and trading P&L
 
-To run this project, you will need to install the required Python packages:
-pip install numpy pandas scikit-learn tensorflow matplotlib yfinance pandas-datareader seaborn
+---
 
-📂 Project Structure
+## 🛠️ Tech Stack
 
-	├── StackedLSTM.ipynb      # Jupyter Notebook with the full workflow  
-	├── README.md              # Project documentation  
-	├── AAPL_daily.csv         # Example dataset (Apple stock data)  
+![Python](https://img.shields.io/badge/Python-3776AB?style=flat-square&logo=python&logoColor=white)
+![TensorFlow](https://img.shields.io/badge/TensorFlow-FF6F00?style=flat-square&logo=tensorflow&logoColor=white)
+![Keras](https://img.shields.io/badge/Keras-D00000?style=flat-square&logo=keras&logoColor=white)
+![Pandas](https://img.shields.io/badge/Pandas-150458?style=flat-square&logo=pandas&logoColor=white)
+![scikit-learn](https://img.shields.io/badge/scikit--learn-F7931E?style=flat-square&logo=scikit-learn&logoColor=white)
+![Matplotlib](https://img.shields.io/badge/Matplotlib-11557C?style=flat-square&logoColor=white)
 
-📊 Data Collection
+---
 
-Stock price data is fetched from Yahoo Finance using the yfinance package. You can modify the code to collect data for any stock symbol by changing the ticker.
+## 🧠 Model Architecture
 
-Example Code to Fetch Data:
+```
+Input (sequence of N days)
+        │
+        ▼
+┌───────────────────┐
+│  LSTM Layer 1     │  return_sequences=True
+└────────┬──────────┘
+         │
+         ▼
+┌───────────────────┐
+│  LSTM Layer 2     │  return_sequences=True
+└────────┬──────────┘
+         │
+         ▼
+┌───────────────────┐
+│  LSTM Layer 3     │  return_sequences=False
+└────────┬──────────┘
+         │
+         ▼
+┌───────────────────┐
+│  Dense (1)        │  Predicted next-day closing price
+└───────────────────┘
 
-	# Example to fetch Apple (AAPL) stock data from June 1, 2004
-	from datetime import datetime
-	stock_data = prepare_ticker_data("AAPL", start_date="2004-06-01")
-	stock_data.to_csv("AAPL_daily.csv", index=False)
+Training: Adam optimizer · MSE loss
+Callbacks: EarlyStopping · ReduceLROnPlateau
+```
 
+---
 
-🔍 Key Functions
+## 💰 Mock Trading Strategy
 
-This project includes several helper functions to process stock data:
+| Signal | Condition | Action |
+|--------|-----------|--------|
+| **Buy** | Predicted price > previous actual price | Purchase stock |
+| **Sell** | Predicted price < previous actual price | Sell holdings |
+| **Hold** | No signal | Do nothing |
 
-1. get_ticker_data(ticker_code: str, start_date=None, end_date=datetime.today())
+Tracks capital, owned shares, and final portfolio value to calculate total return.
 
-	•	Fetches stock data using the Yahoo Finance API for a given stock ticker and date range.
+---
 
-2. clean_ticker_data(df)
+## 🏗️ Project Structure
 
-	•	Cleans and preprocesses stock data (e.g., renaming columns, converting date format).
-3. resample(df)
+```
+stock-price-analysis-and-algorithmic-trading-model/
+├── SCRIPTS/
+│   ├── StackedLSTM.ipynb   # Full workflow: data → model → trading sim
+│   ├── SMA.ipynb           # Simple Moving Average baseline
+│   └── AAPL_daily.csv      # Example dataset (Apple, daily OHLCV)
+├── requirements.txt
+└── README.md
+```
 
-	•	Resamples time-series data to daily frequency and fills any missing days.
+---
 
-4. basic_preprocess(df)
+## 🚀 Running Locally
 
-	•	Interpolates missing values and converts the dataset into a float-compatible format.
+### Prerequisites
+- Python 3.10+
+- Jupyter Notebook or JupyterLab
 
-5. prepare_ticker_data(ticker_code: str, start_date=None, end_date=datetime.today())
+### Install & run
 
-	•	A pipeline function that combines fetching, cleaning, resampling, and preprocessing in one step.
+```bash
+git clone https://github.com/iKatiyar/stock-price-analysis-and-algorithmic-trading-model.git
+cd stock-price-analysis-and-algorithmic-trading-model
 
-🧠 Model Training
+pip install -r requirements.txt
+jupyter notebook SCRIPTS/StackedLSTM.ipynb
+```
 
-The stacked LSTM model is built using TensorFlow’s Keras API.
+### Fetch data for any stock
 
-🔑 Key Steps:
+```python
+from datetime import datetime
+stock_data = prepare_ticker_data("TSLA", start_date="2015-01-01")
+```
 
-	1.	Data Normalization: The stock prices are scaled between 0 and 1 using MinMaxScaler for better model performance.
-	2.	Data Splitting: The dataset is divided into training and testing sets.
-	3.	Model Definition: 
- 			• A stacked LSTM architecture with multiple layers.
-    			• A Dense output layer for predicting the next day's stock price.
-	4.	Training Optimization:
-			• Early stopping prevents overfitting.
-    			• Learning rate reduction improves convergence.
-	5.	Evaluation: The model is evaluated using Mean Squared Error (MSE) and other relevant metrics.
+Replace `"TSLA"` with any valid ticker symbol.
 
- 
-💰 Mock Trading Environment
+---
 
-A mock trading simulation is implemented to assess the model’s predictions.
+## 📊 Key Functions
 
-💹 Trading Strategy
-
-	•	Buy when the predicted price is higher than the previous actual price.
-	•	Sell when the predicted price is lower than the previous actual price.
-
-🔑 Key Steps:
-
-	1.	Buying Condition: Purchase stock if the predicted price is higher than the actual price.
-	2.	Selling Condition: Sell stock if the predicted price is lower than the actual price.
-	3.	Profit Calculation: Track capital and owned stocks to compute total returns.
- 
-🚀 Running the Code
-
-1.	Clone the repository:
-
-		git clone https://github.com/yourusername/stacked-lstm-stock-prediction.git
-		cd stacked-lstm-stock-prediction
-
-2.	Run the Jupyter Notebook (StackedLSTM.ipynb) step by step.
-
-
-📊 Results
-
-After executing the notebook:
-
-✅ A trained LSTM model capable of predicting future stock prices will be created.
-✅ A visualization comparing actual vs predicted stock prices will be displayed.
-✅ The mock trading simulation will provide insights into the profitability of using LSTM predictions for trading.
-
-📜 License
-
-This project is licensed under the MIT License. See the LICENSE file for more details.
+| Function | Description |
+|----------|-------------|
+| `get_ticker_data()` | Fetch OHLCV data from Yahoo Finance |
+| `clean_ticker_data()` | Rename columns, parse dates |
+| `resample()` | Resample to daily frequency, fill gaps |
+| `basic_preprocess()` | Interpolate missing values, cast to float |
+| `prepare_ticker_data()` | Full pipeline: fetch → clean → resample → preprocess |
